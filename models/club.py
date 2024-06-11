@@ -10,3 +10,4 @@ class ClubModel(db.Model):
     city = db.Column(db.String(50), nullable=False)
     main_stadium = db.Column(db.String(50), nullable=False)
     est = db.Column(db.Date(), nullable=False) # yyyy-MM-dd
+    team = db.relationship("TeamModel", back_populates="club", lazy="dynamic")
