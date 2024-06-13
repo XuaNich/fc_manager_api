@@ -1,6 +1,5 @@
 import os
 
-
 from flask import Flask
 from dotenv import load_dotenv
 
@@ -12,6 +11,9 @@ from resources.player import blp as PlayerBlueprint
 from resources.club import blp as ClubBlueprint
 from resources.user import blp as UserBlueprint
 from flask_migrate import Migrate
+
+
+
 
 
 def create_app():
@@ -41,6 +43,6 @@ def create_app():
 
 
 app = create_app()
-
-
 migrate = Migrate(app, db)
+
+

@@ -1,18 +1,21 @@
 from flask.views import MethodView
 from flask_smorest import Blueprint
 from db import db
+from models import UserModel
+from schemas import UserSchema
 
-
-blp = Blueprint("Users", __name__, description="Operaions on the users")
+blp = Blueprint("Users", __name__, description="Operations on the users")
 
 
 @blp.route("/users/<int:user_id>")
 class User(MethodView):
+    @blp.response(200, UserSchema)
     def get(self, user_id):
-        pass
+        return UserModel.query.get_or_404(user_id)
 
 
 @blp.route("/users/")
 class UserList(MethodView):
+    @blp.response(200, UserSchema(many=True))
     def get(self):
-        pass
+        return UserModel.query.all()
