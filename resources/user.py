@@ -5,7 +5,6 @@ from passlib.handlers.pbkdf2 import pbkdf2_sha256
 from db import db
 from models import UserModel
 from schemas import UserSchema
-from passlib.hash import pbkdf2.sha256
 from flask_jwt_extended import create_access_token
 
 
@@ -27,7 +26,7 @@ class UserList(MethodView):
 
 
 @blp.route("/register")
-class UserRegister(MethodView)
+class UserRegister(MethodView):
     @blp.arguments(UserSchema)
     def post(self, user_data):
         if UserModel.query.filter(UserModel.username == user_data["username"]).first():
@@ -53,4 +52,13 @@ class UserLogin(MethodView):
         if user and pbkdf2_sha256.verify(user_data["password"], user.password):
             access_token = create_access_token(identity=user_id)
             return {"access_token": "access_token"}, 200
-        abort(401, message="Invalid credentials"
+        abort(401, message="Invalid credentials")
+
+
+@blp.route("/logout")
+class UserLogout(MethodView):
+    @jwt_required
+    def post(self):
+        jti = get_jwt()["jti"]
+        BLOCKLIST.add(jti)
+        return {"message": "Logged out"}, 200

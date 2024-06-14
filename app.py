@@ -13,7 +13,7 @@ from resources.user import blp as UserBlueprint
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 
-
+from blocklist import BLOCKLIST
 
 def create_app():
     load_dotenv()
@@ -45,6 +45,19 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+
+
+    @jwt.additional_claims_loader
+    def add_claims_to_jwt(identity):
+        if identity == 1:
+            return {"is_admin": True}
+        return {"is_admin": False}
+
+
+    @jwt.token_in_blocklist_loader
+    def check_if_token_in_blocklist(jwt_header, jwt_payload):
+        return jwt_payload["jit"] in BLOCKLIST
+
 
     @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_payload):

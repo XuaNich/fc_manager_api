@@ -1,10 +1,13 @@
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
-from db import db
 from models.team import TeamModel
 from schemas import TeamSchema, TeamUpdateSchema
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from flask_jwt_extended import jwt_required
+
+
+from db import db
+from blocklist import BLOCKLIST
 
 
 blp = Blueprint("teams", __name__, decription="Operations on the teams")
@@ -18,6 +21,9 @@ class Team(MethodView):
 
     @jwt_required
     def delete(self, team_id):
+        jwt = get_jwt()
+        if not jwt.get("is_admin"):
+            abort(401, message="Admin privilege required")
         team = TeamModel.query.get_or_404(team_id)
         db.session.delete(team)
         db.session.commit()
