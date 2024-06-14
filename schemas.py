@@ -23,7 +23,8 @@ class PlainTeamSchema(Schema):
 
 class UserSchema(PlainUserSchema):
     id = fields.Int(dump_only=True)
-    user_name = fields.Str(required=True)
+    username = fields.Str(required=True)
+    password = fields.Str(required=True, load_only=True)
     teams = fields.List(fields.Nested(PlainTeamSchema(), dump_only=True))
 
 

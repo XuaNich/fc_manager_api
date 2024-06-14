@@ -4,6 +4,8 @@ from db import db
 from models.team import TeamModel
 from schemas import TeamSchema, TeamUpdateSchema
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from flask_jwt_extended import jwt_required
+
 
 blp = Blueprint("teams", __name__, decription="Operations on the teams")
 
@@ -12,15 +14,16 @@ blp = Blueprint("teams", __name__, decription="Operations on the teams")
 class Team(MethodView):
     @blp.response(200, TeamSchema)
     def get(self, team_id):
-        pass
+        return TeamModel.query.get_or_404(team_id)
 
+    @jwt_required
     def delete(self, team_id):
         team = TeamModel.query.get_or_404(team_id)
         db.session.delete(team)
         db.session.commit()
         return {'message': "Team deleted"}
 
-
+    @jwt_required
     @blp.arguments(TeamUpdateSchema)
     @blp.response(200, TeamSchema)
     def put(self, team_id, team_data):
@@ -43,7 +46,7 @@ class TeamList(MethodView):
     def get(self):
         return TeamModel.query.all()
 
-
+    @jwt_required
     @blp.arguments(TeamSchema)
     @blp.response(201, TeamSchema)
     def post(self, team_data):
